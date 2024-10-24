@@ -15,6 +15,7 @@ class _PlanScreenState extends State<PlanScreen> {
   late Map<String, DateTime> weekDates;
   List<double> progress =
       List.generate(7, (index) => 0.0); // Inicializado vacío
+  bool _progressFetched = false; // Nueva variable para controlar la carga
 
   @override
   void initState() {
@@ -27,8 +28,10 @@ class _PlanScreenState extends State<PlanScreen> {
       setState(() {});
     });
 
-    // Simular la obtención del progreso
-    _fetchProgress();
+    // Solo cargar progreso una vez, al iniciar
+    if (!_progressFetched) {
+      _fetchProgress();
+    }
   }
 
   // Simular la obtención de los valores de progreso (esto será reemplazable con una API)
@@ -37,6 +40,7 @@ class _PlanScreenState extends State<PlanScreen> {
         const Duration(seconds: 2)); // Simular una espera de carga
     setState(() {
       progress = List.generate(7, (index) => 0.7); // Progreso simulado
+      _progressFetched = true; // Marcar progreso como cargado
     });
   }
 
@@ -58,6 +62,7 @@ class _PlanScreenState extends State<PlanScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        // Título dinámico con la fecha actual
         title: Text(formattedDate), // Mostrar fecha actual en el AppBar
       ),
       body: Column(
@@ -67,21 +72,6 @@ class _PlanScreenState extends State<PlanScreen> {
             progress: progress, // Progreso dinámico
             onDateChanged:
                 _changeCurrentDate, // Pasar el callback al widget del calendario
-          ),
-          const SizedBox(height: 20.0),
-          Expanded(
-            child: ListView.builder(
-              itemCount: weekDates.length,
-              itemBuilder: (context, index) {
-                final day = weekDates.keys.elementAt(index);
-                final date = weekDates.values.elementAt(index);
-
-                return ListTile(
-                  title: Text(day),
-                  subtitle: Text(DateFormat('dd/MM/yyyy').format(date)),
-                );
-              },
-            ),
           ),
         ],
       ),

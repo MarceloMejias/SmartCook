@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smartcook/screens/tabs/plan.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -17,10 +16,6 @@ class LoginPage extends StatelessWidget {
     final textFieldFillColor = isDarkMode
         ? Colors.grey[800]
         : Colors.white; // Campo de texto oscuro o claro
-    final buttonBackgroundColor =
-        isDarkMode ? Colors.grey[700] : Colors.white; // Botón de login
-    final buttonTextColor =
-        isDarkMode ? Colors.white : const Color(0xFF4DA72E); // Texto del botón
 
     return Scaffold(
       backgroundColor: backgroundColor, // Fondo dinámico
@@ -39,52 +34,30 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 50.0),
 
               // Campo de texto de usuario
-              TextField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: textFieldFillColor, // Color dinámico del campo
-                  hintText: 'Ingresa tu usuario',
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(30.0), // Bordes redondeados
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+              _buildTextField(
+                context,
+                hintText: 'Ingresa tu usuario',
+                isPassword: false,
+                fillColor: textFieldFillColor,
               ),
               const SizedBox(height: 20.0),
 
               // Campo de texto de contraseña
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: textFieldFillColor, // Color dinámico del campo
-                  hintText: 'Contraseña',
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(30.0), // Bordes redondeados
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+              _buildTextField(
+                context,
+                hintText: 'Contraseña',
+                isPassword: true,
+                fillColor: textFieldFillColor,
               ),
               const SizedBox(height: 30.0),
 
               // Botón de login
               ElevatedButton(
                 onPressed: () {
-                  // Navega hacia PlanScreen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PlanScreen()),
-                  );
+                  // Simulación de autenticación y redirección
+                  Navigator.pushReplacementNamed(context, '/home');
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: buttonTextColor, // Texto dinámico
-                  backgroundColor: buttonBackgroundColor, // Fondo dinámico
                   padding: const EdgeInsets.symmetric(
                       horizontal: 80.0, vertical: 15.0),
                   shape: RoundedRectangleBorder(
@@ -95,6 +68,26 @@ class LoginPage extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(BuildContext context,
+      {required String hintText,
+      required bool isPassword,
+      required Color? fillColor}) {
+    return TextField(
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: fillColor, // Color dinámico del campo
+        hintText: hintText,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30.0), // Bordes redondeados
+          borderSide: BorderSide.none,
         ),
       ),
     );

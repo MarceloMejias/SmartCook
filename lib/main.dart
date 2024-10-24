@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:smartcook/screens/auth/login.dart';
+import 'package:smartcook/screens/tabs/home.dart'; // Importa el nuevo archivo
 import 'package:smartcook/theme.dart';
 
 void main() {
   runApp(const MainApp());
 }
-
-// Prepara las tabs
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -15,10 +14,28 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //Paleta de colores de la app
-      theme: AppThemes.lightTheme,
-      darkTheme: AppThemes.darkTheme,
-      home: const LoginPage(),
+      theme: ThemeData(
+        useMaterial3: true, // Habilitar Material 3
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+          brightness: Brightness.light,
+        ),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true, // Habilitar Material 3 en modo oscuro
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode:
+          ThemeMode.system, // Cambia automáticamente entre claro y oscuro
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LoginPage(),
+        '/home': (context) =>
+            const HomeScreen(), // HomeScreen ahora está en otro archivo
+      },
     );
   }
 }

@@ -34,7 +34,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
+    final primaryColor = Theme.of(context).colorScheme.primary;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final screenWidth = MediaQuery.of(context).size.width;
@@ -89,14 +89,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       padding: const EdgeInsets.all(6.0), // Padding del círculo
                       child: Text(
                         daysOfWeek[index],
-                        style: TextStyle(
-                          fontSize: 12, // Tamaño de letra más pequeño
-                          color: isToday
-                              ? Colors.white
-                              : isDarkMode
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 12, // Tamaño de letra más pequeño
+                              color: isToday
                                   ? Colors.white
-                                  : Colors.black,
-                        ),
+                                  : isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -115,14 +115,15 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                         percent: widget.progress[index],
                         center: Text(
                           weekDates[index].day.toString(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isSelected
-                                ? primaryColor
-                                : isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontSize: 14,
+                                    color: isSelected
+                                        ? primaryColor
+                                        : isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                  ),
                         ),
                         progressColor: isSelected
                             ? primaryColor
