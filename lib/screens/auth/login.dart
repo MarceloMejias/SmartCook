@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -6,47 +7,74 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Logo
-            Center(
-              child: Image.asset(
-                'assets/logo.svg', // Asegúrate de tener el logo en esta ruta
-                height: 100,
+      backgroundColor: const Color(0xFF4DA72E), // Fondo de color verde
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Logo SVG
+              SvgPicture.asset(
+                'assets/logo.svg',
+                height: 130.0,
+                width: 130.0,
               ),
-            ),
-            SizedBox(height: 40),
-            // Email TextField
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 50.0),
+
+              // Campo de texto de usuario
+              TextField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Ingresa tu usuario',
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(30.0), // Bordes redondeados
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            // Password TextField
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 20.0),
+
+              // Campo de texto de contraseña
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Contraseña',
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(30.0), // Bordes redondeados
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            // Login Button
-            ElevatedButton(
-              onPressed: () {
-                // Acción de inicio de sesión
-              },
-              child: const Text('Iniciar sesión'),
-            ),
-          ],
+              const SizedBox(height: 30.0),
+
+              // Botón de login
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica de login
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: const Color(0xFF4DA72E),
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 80.0, vertical: 15.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ), // Texto verde
+                ),
+                child: const Text('Iniciar Sesión'),
+              ),
+            ],
+          ),
         ),
       ),
     );
