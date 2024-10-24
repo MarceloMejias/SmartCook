@@ -4,12 +4,11 @@ Promoviendo una vida más saludable con recetas equilibradas.
 
 Desarrollo de Aplicaciones Móviles 2024-2.
 
-// Tabla
-| Nombre | Correo |
-| ------ | ------ |
+| Nombre         | Correo                |
+| -------------- | --------------------- |
 | Marcelo Mejías | marcelo.mejias@usm.cl |
-| x | x@x.x |
-| x | x@x.x |
+| x              | x@x.x                 |
+| x              | x@x.x                 |
 
 ---
 
