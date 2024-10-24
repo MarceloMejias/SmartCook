@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smartcook/screens/auth/login.dart';
 import 'package:smartcook/screens/tabs/home.dart'; // Importa el nuevo archivo
-import 'package:smartcook/theme.dart';
+import 'package:smartcook/colors.dart'; // Asegúrate de que este import esté presente
 
 void main() {
   runApp(const MainApp());
@@ -14,20 +14,22 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true, // Habilitar Material 3
+      theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
+          seedColor: AppColors.primaryGreen, // Cambia Colors por AppColors
           brightness: Brightness.light,
         ),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true, // Habilitar Material 3 en modo oscuro
+      ).copyWith(
+          // Aquí puedes agregar más configuraciones específicas del tema
+          ),
+      darkTheme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
+          seedColor: AppColors.primaryGreen, // Cambia Colors por AppColors
           brightness: Brightness.dark,
         ),
-      ),
+      ).copyWith(
+          // Configuraciones específicas del tema oscuro
+          ),
       themeMode:
           ThemeMode.system, // Cambia automáticamente entre claro y oscuro
       initialRoute: '/',

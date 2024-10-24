@@ -83,6 +83,12 @@ class LoginPage extends StatelessWidget {
         filled: true,
         fillColor: fillColor, // Color dinámico del campo
         hintText: hintText,
+        hintStyle: TextStyle(
+          color: Theme.of(context)
+              .colorScheme
+              .onSurface
+              .withOpacity(0.6), // Color del hint basado en el tema
+        ),
         contentPadding:
             const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
         border: OutlineInputBorder(

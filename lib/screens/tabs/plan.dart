@@ -37,7 +37,7 @@ class _PlanScreenState extends State<PlanScreen> {
   // Simular la obtención de los valores de progreso (esto será reemplazable con una API)
   Future<void> _fetchProgress() async {
     await Future.delayed(
-        const Duration(seconds: 2)); // Simular una espera de carga
+        const Duration(seconds: 0)); // Simular una espera de carga
     setState(() {
       progress = List.generate(7, (index) => 0.7); // Progreso simulado
       _progressFetched = true; // Marcar progreso como cargado
