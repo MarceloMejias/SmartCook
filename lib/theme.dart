@@ -5,7 +5,7 @@ class AppThemes {
   // Tema claro
   static final ThemeData lightTheme = ThemeData(
     primaryColor: AppColors.primaryGreen,
-    hintColor: AppColors.primaryGreen,
+    hintColor: AppColors.lightGreen,
     scaffoldBackgroundColor: AppColors.lightGray,
     colorScheme: const ColorScheme.light(
       primary: AppColors.primaryGreen,
@@ -31,7 +31,7 @@ class AppThemes {
   // Tema oscuro
   static final ThemeData darkTheme = ThemeData(
     primaryColor: AppColors.primaryGreen,
-    hintColor: AppColors.primaryGreen,
+    hintColor: AppColors.lightGreen,
     scaffoldBackgroundColor: AppColors.darkGray,
     colorScheme: const ColorScheme.dark(
       primary: AppColors.primaryGreen,

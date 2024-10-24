@@ -17,8 +17,10 @@ class LoginPage extends StatelessWidget {
     final textFieldFillColor = isDarkMode
         ? Colors.grey[800]
         : Colors.white; // Campo de texto oscuro o claro
-    final buttonBackgroundColor = const Color(0xFF4DA72E); // Siempre verde
-    final buttonTextColor = Colors.white; // Texto del botón siempre blanco
+    final buttonBackgroundColor =
+        isDarkMode ? Colors.grey[700] : Colors.white; // Botón de login
+    final buttonTextColor =
+        isDarkMode ? Colors.white : const Color(0xFF4DA72E); // Texto del botón
 
     return Scaffold(
       backgroundColor: backgroundColor, // Fondo dinámico
@@ -81,8 +83,8 @@ class LoginPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: buttonTextColor, // Texto siempre blanco
-                  backgroundColor: buttonBackgroundColor, // Siempre verde
+                  foregroundColor: buttonTextColor, // Texto dinámico
+                  backgroundColor: buttonBackgroundColor, // Fondo dinámico
                   padding: const EdgeInsets.symmetric(
                       horizontal: 80.0, vertical: 15.0),
                   shape: RoundedRectangleBorder(
