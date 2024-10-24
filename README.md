@@ -1,4 +1,4 @@
-# SmartCook
+![Banner](/banner.png)
 
 Promoviendo una vida más saludable con recetas equilibradas.
 
