@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smartcook/screens/tabs/plan.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Verificar si el tema es oscuro
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Colores dinámicos basados en el tema
+    final backgroundColor = isDarkMode
+        ? Colors.black
+        : const Color(0xFF4DA72E); // Verde en modo claro, negro en modo oscuro
+    final textFieldFillColor = isDarkMode
+        ? Colors.grey[800]
+        : Colors.white; // Campo de texto oscuro o claro
+    final buttonBackgroundColor = const Color(0xFF4DA72E); // Siempre verde
+    final buttonTextColor = Colors.white; // Texto del botón siempre blanco
+
     return Scaffold(
-      backgroundColor: const Color(0xFF4DA72E), // Fondo de color verde
+      backgroundColor: backgroundColor, // Fondo dinámico
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -26,7 +40,7 @@ class LoginPage extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: textFieldFillColor, // Color dinámico del campo
                   hintText: 'Ingresa tu usuario',
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 20.0),
@@ -44,7 +58,7 @@ class LoginPage extends StatelessWidget {
                 obscureText: true,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: textFieldFillColor, // Color dinámico del campo
                   hintText: 'Contraseña',
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 20.0),
@@ -60,16 +74,20 @@ class LoginPage extends StatelessWidget {
               // Botón de login
               ElevatedButton(
                 onPressed: () {
-                  // Lógica de login
+                  // Navega hacia PlanScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PlanScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: const Color(0xFF4DA72E),
-                  backgroundColor: Colors.white,
+                  foregroundColor: buttonTextColor, // Texto siempre blanco
+                  backgroundColor: buttonBackgroundColor, // Siempre verde
                   padding: const EdgeInsets.symmetric(
                       horizontal: 80.0, vertical: 15.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
-                  ), // Texto verde
+                  ),
                 ),
                 child: const Text('Iniciar Sesión'),
               ),
