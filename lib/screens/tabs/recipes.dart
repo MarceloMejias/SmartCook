@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smartcook/screens/widgets/recipe_card.dart';
+import 'package:smartcook/cards/recipe_card.dart';
 import 'package:smartcook/screens/tabs/recipe_detail.dart';
+import 'package:smartcook/screens/add_recipe.dart';
 
 class RecipesScreen extends StatelessWidget {
   const RecipesScreen({super.key});
@@ -75,6 +76,16 @@ class RecipesScreen extends StatelessWidget {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddRecipeScreen()),
+          );
+        },
+        label: const Text('Añadir Receta'),
+        icon: const Icon(Icons.add),
       ),
     );
   }

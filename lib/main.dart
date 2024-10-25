@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smartcook/screens/auth/login.dart';
-import 'package:smartcook/screens/tabs/home.dart'; // Importa el nuevo archivo
-import 'package:smartcook/colors.dart'; // Asegúrate de que este import esté presente
+import 'package:smartcook/screens/tabs/home.dart'; // Importa la pantalla de inicio
+import 'package:smartcook/colors.dart'; // Importa la paleta de colores
 
 void main() {
   runApp(const MainApp());
@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primaryGreen, // Cambia Colors por AppColors
+          seedColor: AppColors.primaryGreen,
           brightness: Brightness.light,
         ),
       ).copyWith(
@@ -24,7 +24,7 @@ class MainApp extends StatelessWidget {
           ),
       darkTheme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primaryGreen, // Cambia Colors por AppColors
+          seedColor: AppColors.primaryGreen,
           brightness: Brightness.dark,
         ),
       ).copyWith(
@@ -35,8 +35,7 @@ class MainApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginPage(),
-        '/home': (context) =>
-            const HomeScreen(), // HomeScreen ahora está en otro archivo
+        '/home': (context) => const HomeScreen(),
       },
     );
   }

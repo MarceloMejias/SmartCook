@@ -1,58 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:smartcook/screens/auth/register.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final String dummyUsername = 'usuario';
-  final String dummyPassword = 'password';
+  Future<void> _register() async {
+    // Simulando la comprobación del nombre de usuario
+    bool isUsernameTaken = await checkUsername(_usernameController.text);
 
-  Future<void> _login() async {
-    final String username = _usernameController.text;
-    final String password = _passwordController.text;
-
-    if (username == dummyUsername && password == dummyPassword) {
-      // Credenciales válidas: continuar con el inicio de sesión
-      // Se navega al homescreen después de un inicio de sesión exitoso
-      Navigator.of(context).pushReplacementNamed('/home');
-    } else {
-      // Credenciales inválidas: mostrar alerta
-      _showInvalidCredentialsDialog();
+    if (isUsernameTaken) {
+      _showAlertDialog('Nombre de usuario ya en uso',
+          'Por favor, elige otro nombre de usuario.');
+      return; // Salir de la función si el nombre de usuario ya está en uso
     }
+
+    // Implementa aquí la lógica de registro real
   }
 
-  Future<void> _loginWithGoogle() async {
-    // Implementa la lógica de login con Google
+  Future<bool> checkUsername(String username) async {
+    // Simulando una llamada al backend para verificar el nombre de usuario
+    await Future.delayed(const Duration(seconds: 1)); // Simulación de espera
+    return username == 'usuarioExistente'; // Cambia esto por tu lógica real
   }
 
-  Future<void> _loginWithApple() async {
-    // Implementa la lógica de login con Apple
+  Future<void> _registerWithGoogle() async {
+    // Implementa la lógica de registro con Google
   }
 
-  void _showInvalidCredentialsDialog() {
+  Future<void> _registerWithApple() async {
+    // Implementa la lógica de registro con Apple
+  }
+
+  void _showAlertDialog(String title, String message) {
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Credenciales inválidas'),
-          content: const Text(
-              'El usuario o la contraseña que ingresaste no son correctos.'),
+          title: Text(title),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
+              child: const Text('Aceptar'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Cierra el diálogo
               },
-              child: const Text('Cerrar'),
             ),
           ],
         );
@@ -60,19 +62,22 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _navigateToRegister() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => RegisterScreen()));
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? Colors.black : const Color(0xFF4DA72E);
     final textFieldFillColor = isDarkMode ? Colors.grey[800] : Colors.white;
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Registrarse'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Volver a la pantalla anterior
+          },
+        ),
+      ),
       backgroundColor: backgroundColor,
       body: Center(
         child: Padding(
@@ -88,7 +93,17 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 50.0),
 
-              // Campos de texto de usuario y contraseña
+              // Campo de texto para el nombre
+              _buildTextField(
+                context,
+                controller: _nameController,
+                hintText: 'Ingresa tu nombre',
+                isPassword: false,
+                fillColor: textFieldFillColor,
+              ),
+              const SizedBox(height: 20.0),
+
+              // Campo de texto de usuario
               _buildTextField(
                 context,
                 controller: _usernameController,
@@ -97,6 +112,18 @@ class _LoginPageState extends State<LoginPage> {
                 fillColor: textFieldFillColor,
               ),
               const SizedBox(height: 20.0),
+
+              // Campo de texto de correo electrónico
+              _buildTextField(
+                context,
+                controller: _emailController,
+                hintText: 'Ingresa tu correo electrónico',
+                isPassword: false,
+                fillColor: textFieldFillColor,
+              ),
+              const SizedBox(height: 20.0),
+
+              // Campo de texto de contraseña
               _buildTextField(
                 context,
                 controller: _passwordController,
@@ -106,9 +133,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 30.0),
 
-              // Botón de login
+              // Botón de registro
               ElevatedButton(
-                onPressed: _login,
+                onPressed: _register,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 80.0, vertical: 15.0),
@@ -116,39 +143,26 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: const Text('Iniciar Sesión'),
+                child: const Text('Registrarse'),
               ),
 
               const SizedBox(height: 20.0),
 
-              // Botón para registrarse
-              TextButton(
-                onPressed: _navigateToRegister,
-                child: const Text(
-                  '¿No tienes cuenta? Regístrate',
-                  style: TextStyle(
-                    color: Colors.white,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20.0),
-
-              // Botones para iniciar sesión con Google y Apple (dentro de su propio círculo)
+              // Botones para registrarse con Google y Apple (dentro de su propio círculo)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  // Botón Google
                   _buildSocialButton(
                     icon: FontAwesomeIcons.google,
-                    onPressed: _loginWithGoogle,
-                    colorScheme: colorScheme,
+                    onPressed: _registerWithGoogle,
                   ),
                   const SizedBox(width: 30.0),
+
+                  // Botón Apple
                   _buildSocialButton(
                     icon: FontAwesomeIcons.apple,
-                    onPressed: _loginWithApple,
-                    colorScheme: colorScheme,
+                    onPressed: _registerWithApple,
                   ),
                 ],
               ),
@@ -184,20 +198,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildSocialButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-    required ColorScheme colorScheme,
-  }) {
-    final Color backgroundColor = colorScheme.surfaceVariant;
-    final Color iconColor = colorScheme.onSurface;
-
+  Widget _buildSocialButton(
+      {required IconData icon, required VoidCallback onPressed}) {
     return Container(
       width: 60.0,
       height: 60.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: backgroundColor, // Color del círculo basado en el tema
+        color: Colors.white, // Color de fondo del círculo
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -209,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
       child: IconButton(
         icon: FaIcon(icon),
         iconSize: 30.0,
-        color: iconColor, // Color del icono basado en el tema
+        color: Colors.black,
         onPressed: onPressed,
       ),
     );

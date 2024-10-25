@@ -10,11 +10,9 @@ class AppThemes {
       primary: AppColors.primaryGreen,
       secondary: AppColors.accentOrange,
       surface: AppColors.lightGray,
-      background: AppColors.lightGray,
       onPrimary: Colors.white,
       onSecondary: Colors.black,
       onSurface: AppColors.darkGray,
-      onBackground: AppColors.darkGray,
     ),
     scaffoldBackgroundColor: AppColors.lightGray,
     textTheme: const TextTheme(
@@ -39,11 +37,9 @@ class AppThemes {
       primary: AppColors.primaryGreen,
       secondary: AppColors.accentOrange,
       surface: AppColors.darkGray,
-      background: AppColors.darkGray,
       onPrimary: Colors.white,
       onSecondary: Colors.black,
       onSurface: AppColors.white,
-      onBackground: AppColors.white,
     ),
     scaffoldBackgroundColor: AppColors.darkGray,
     textTheme: const TextTheme(

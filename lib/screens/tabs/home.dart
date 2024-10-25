@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smartcook/screens/tabs/plan.dart';
-import 'package:smartcook/screens/tabs/profile.dart'; // Asegúrate de crear esta pantalla
-import 'package:smartcook/screens/tabs/recipes.dart'; // Asegúrate de crear esta pantalla
+import 'package:smartcook/screens/tabs/profile.dart';
+import 'package:smartcook/screens/tabs/recipes.dart';
+import 'package:smartcook/screens/tabs/search.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _screens = <Widget>[
     const PlanScreen(), // Pantalla de Plan de comidas
     RecipesScreen(), // Pantalla de Recetas
+    SearchScreen(), // Pantalla de Búsqueda
     ProfileScreen(), // Pantalla de Perfil
 
     // Aquí se pueden añadir más pantallas según sea necesario
@@ -43,6 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.book),
             label: 'Recetas',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search),
+            label: 'Buscar',
           ),
           NavigationDestination(
             icon: Icon(Icons.person),
