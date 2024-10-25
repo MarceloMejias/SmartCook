@@ -101,12 +101,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     final file = File(_imageFile!.path);
     final String imagePath = 'images/${file.uri.pathSegments.last}';
 
-    final response = await Supabase.instance.client.storage
-        .from('recipes_images') // Reemplaza con el nombre de tu bucket
-        .upload(imagePath, file,
-            fileOptions:
-                const FileOptions(cacheControl: '3600', upsert: false));
-
     // Obtener URL de la imagen cargada
     final imageUrl = Supabase.instance.client.storage
         .from('recipe_images')
