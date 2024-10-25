@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smartcook/screens/auth/register.dart';
-import 'package:smartcook/api/apiservice.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,42 +13,54 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  final ApiService _apiService = ApiService(); // Instancia de ApiService
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   Future<void> _login() async {
-    final String username = _usernameController.text;
+    final String email = _emailController.text;
     final String password = _passwordController.text;
 
     try {
-      await _apiService.loginUser(
-          username, password); // Llamada a la API para el login
-      // Si el login es exitoso, navega al homescreen
-      Navigator.of(context).pushReplacementNamed('/home');
+      final response = await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      // Verifica si hay un usuario autenticado
+      if (response.user != null) {
+        // Guarda el token de acceso
+        await _secureStorage.write(
+            key: 'auth_token', value: response.session?.accessToken);
+
+        // Si el login es exitoso, navega al homescreen
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        // Si no hay usuario, muestra el mensaje de error
+        _showInvalidCredentialsDialog(
+            'Credenciales inválidas. Por favor, inténtalo de nuevo.');
+      }
     } catch (e) {
-      // Si hay un error, muestra el diálogo de credenciales inválidas
-      _showInvalidCredentialsDialog();
+      // Manejo de excepciones
+      _showInvalidCredentialsDialog('Error de conexión');
     }
   }
 
   Future<void> _loginWithGoogle() async {
-    // Implementa la lógica de login con Google
+    // Implementa la lógica de login con Google aquí
   }
 
   Future<void> _loginWithApple() async {
-    // Implementa la lógica de login con Apple
+    // Implementa la lógica de login con Apple aquí
   }
 
-  void _showInvalidCredentialsDialog() {
+  void _showInvalidCredentialsDialog(String message) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Credenciales inválidas'),
-          content: const Text(
-              'El usuario o la contraseña que ingresaste no son correctos.'),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -89,11 +102,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 50.0),
 
-              // Campos de texto de usuario y contraseña
+              // Campos de texto de email y contraseña
               _buildTextField(
                 context,
-                controller: _usernameController,
-                hintText: 'Ingresa tu usuario',
+                controller: _emailController,
+                hintText: 'Ingresa tu email',
                 isPassword: false,
                 fillColor: textFieldFillColor,
               ),
@@ -136,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 20.0),
 
-              // Botones para iniciar sesión con Google y Apple (dentro de su propio círculo)
+              // Botones para iniciar sesión con Google y Apple
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -198,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
       height: 60.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: backgroundColor, // Color del círculo basado en el tema
+        color: backgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -210,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
       child: IconButton(
         icon: FaIcon(icon),
         iconSize: 30.0,
-        color: iconColor, // Color del icono basado en el tema
+        color: iconColor,
         onPressed: onPressed,
       ),
     );

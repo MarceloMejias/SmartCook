@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Importar shared_preferences
 import 'package:smartcook/screens/auth/login.dart';
 import 'package:smartcook/screens/tabs/home.dart'; // Importa la pantalla de inicio
 import 'package:smartcook/colors.dart'; // Importa la paleta de colores
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // Asegúrate de inicializar los bindings
 
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('jwt_token'); // Recupera el token JWT
+  // Inicializa Supabase
+  await Supabase.initialize(
+    url: 'https://euhmwqyeoqxvdildhvfw.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1aG13cXllb3F4dmRpbGRodmZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk4ODg2MjcsImV4cCI6MjA0NTQ2NDYyN30.hLBmSmCh2uryeM4_G7DXrr_kBSOwlMANMlZEiyEEi8c',
+  );
 
-  runApp(
-      MainApp(isLoggedIn: token != null)); // Pasa el estado de inicio de sesión
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  final bool isLoggedIn;
-
-  const MainApp(
-      {super.key, required this.isLoggedIn}); // Constructor modificado
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,11 +44,42 @@ class MainApp extends StatelessWidget {
           ThemeMode.system, // Cambia automáticamente entre claro y oscuro
       initialRoute: '/',
       routes: {
-        '/': (context) => isLoggedIn
-            ? const HomeScreen()
-            : const LoginPage(), // Usa el estado de inicio de sesión
+        '/': (context) =>
+            const _HomeWrapper(), // Envuelve la lógica de autenticación
         '/home': (context) => const HomeScreen(),
       },
     );
+  }
+}
+
+class _HomeWrapper extends StatelessWidget {
+  const _HomeWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _checkAuthentication(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+              child:
+                  CircularProgressIndicator()); // Muestra un indicador de carga
+        }
+
+        if (snapshot.hasError || !snapshot.data!) {
+          return const LoginPage(); // Si hay error o no está autenticado, muestra el login
+        }
+
+        return const HomeScreen(); // Si está autenticado, muestra la pantalla de inicio
+      },
+    );
+  }
+
+  Future<bool> _checkAuthentication() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    final String? token =
+        await storage.read(key: 'auth_token'); // Lee el token almacenado
+
+    return token != null; // Retorna true si el token existe
   }
 }

@@ -1,116 +1,122 @@
 import 'package:flutter/material.dart';
-import 'package:smartcook/cards/recipe_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartcook/api/apiservice.dart';
+import 'package:smartcook/cards/usercard.dart';
+import 'package:smartcook/screens/auth/login.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Lista de recetas del usuario (puede ser dinámico o venir de una base de datos)
-    final List<Map<String, String>> misRecetas = [
-      {
-        'titulo': 'Ensalada César',
-        'descripcion': 'Una deliciosa ensalada con pollo.',
-        'imageUrl': 'https://via.placeholder.com/150'
-      },
-      {
-        'titulo': 'Pizza Margarita',
-        'descripcion': 'Pizza clásica con albahaca y queso.',
-        'imageUrl': 'https://via.placeholder.com/150'
-      },
-      {
-        'titulo': 'Pasta Carbonara',
-        'descripcion': 'Pasta con salsa cremosa y panceta.',
-        'imageUrl': 'https://via.placeholder.com/150'
-      },
-    ];
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
 
+class _ProfileScreenState extends State<ProfileScreen> {
+  // Inicializamos las variables con valores predeterminados
+  String username = 'Cargando...';
+  String email = 'Cargando...';
+  String profileImageUrl = 'https://via.placeholder.com/150';
+  List<dynamic> myRecipes = [];
+
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('jwt_token');
+
+    if (token != null) {
+      try {
+        // Llama a la API para obtener los datos del perfil
+        final apiService = ApiService();
+        final recipes = await apiService.getRecipes(token);
+        // Aquí deberías obtener el nombre, email y otros datos del usuario de la API
+
+        setState(() {
+          username = 'NombreUsuario'; // Esto debe obtenerse de la API
+          email = 'email@ejemplo.com'; // Esto debe obtenerse de la API
+          profileImageUrl =
+              'https://via.placeholder.com/150'; // Debe obtenerse de la API
+          myRecipes = recipes;
+          _isLoading = false;
+        });
+      } catch (e) {
+        print('Error al cargar el perfil: $e');
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token');
+    // Redirigir al usuario a la pantalla de login
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Perfil del Usuario'),
+        title: const Text('Perfil'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Información del perfil
-              Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/profile_picture.jpg'),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Nombre del Usuario',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Correo Electrónico: usuario@ejemplo.com',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Teléfono: +1234567890',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Acción para editar perfil
-                },
-                child: const Text('Editar Perfil'),
-              ),
-              const SizedBox(height: 20),
-
-              // Sección de Mis Recetas
-              const Text(
-                'Mis Recetas',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Lista de RecipeCard para las recetas del usuario
-              ListView.builder(
-                shrinkWrap:
-                    true, // Hace que la lista se ajuste dentro del scroll padre
-                physics:
-                    const NeverScrollableScrollPhysics(), // Desactiva el scroll independiente
-                itemCount: misRecetas.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: 16.0), // Espaciado entre tarjetas
-                    child: RecipeCard(
-                      imageUrl: misRecetas[index]['imageUrl']!,
-                      title: misRecetas[index]['titulo']!,
-                      description: misRecetas[index]['descripcion']!,
-                      onTap: () {
-                        // Acción al tocar la receta, por ejemplo, abrir detalles
-                        print(
-                            'Receta seleccionada: ${misRecetas[index]['titulo']}');
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  UserCard(
+                    username: username,
+                    email: email,
+                    profileImageUrl: profileImageUrl,
+                    onLogout: _logout,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Mis Recetas',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: myRecipes.length,
+                      itemBuilder: (context, index) {
+                        final recipe = myRecipes[index];
+                        return Card(
+                          elevation: 2,
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: ListTile(
+                            title: Text(recipe['title']),
+                            subtitle: Text(recipe['description']),
+                            leading: Image.network(recipe['imageUrl']),
+                            onTap: () {
+                              // Navegar a los detalles de la receta
+                            },
+                          ),
+                        );
                       },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

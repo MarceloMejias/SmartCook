@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:smartcook/screens/auth/login.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,32 +17,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   Future<void> _register() async {
-    // Simulando la comprobación del nombre de usuario
-    bool isUsernameTaken = await checkUsername(_usernameController.text);
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
 
-    if (isUsernameTaken) {
-      _showAlertDialog('Nombre de usuario ya en uso',
-          'Por favor, elige otro nombre de usuario.');
-      return; // Salir de la función si el nombre de usuario ya está en uso
+    try {
+      // Registra al usuario en Supabase
+      final response = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+      );
+
+      // Verifica si el registro fue exitoso
+      if (response.user != null) {
+        // Guarda el token de acceso
+        await _secureStorage.write(
+            key: 'auth_token', value: response.session?.accessToken);
+
+        // Si el registro es exitoso, navega al homescreen
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        // Si no hay usuario, muestra el mensaje de error
+        _showAlertDialog('Error al registrarse', 'Inténtalo de nuevo.');
+      }
+    } catch (e) {
+      // Manejo de excepciones
+      _showAlertDialog('Error', 'Error de conexión');
     }
-
-    // Implementa aquí la lógica de registro real
-  }
-
-  Future<bool> checkUsername(String username) async {
-    // Simulando una llamada al backend para verificar el nombre de usuario
-    await Future.delayed(const Duration(seconds: 1)); // Simulación de espera
-    return username == 'usuarioExistente'; // Cambia esto por tu lógica real
   }
 
   Future<void> _registerWithGoogle() async {
-    // Implementa la lógica de registro con Google
+    // Implementa la lógica de registro con Google aquí
   }
 
   Future<void> _registerWithApple() async {
-    // Implementa la lógica de registro con Apple
+    // Implementa la lógica de registro con Apple aquí
   }
 
   void _showAlertDialog(String title, String message) {
@@ -60,6 +74,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       },
     );
+  }
+
+  void _navigateToLogin() {
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   @override
@@ -148,7 +167,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               const SizedBox(height: 20.0),
 
-              // Botones para registrarse con Google y Apple (dentro de su propio círculo)
+              // Botón para iniciar sesión
+              TextButton(
+                onPressed: _navigateToLogin,
+                child: const Text(
+                  '¿Ya tienes cuenta? Inicia sesión',
+                  style: TextStyle(
+                    color: Colors.white,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20.0),
+
+              // Botones para registrarse con Google y Apple
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[

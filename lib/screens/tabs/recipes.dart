@@ -2,29 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:smartcook/cards/recipe_card.dart';
 import 'package:smartcook/screens/tabs/recipe_detail.dart';
 import 'package:smartcook/screens/add_recipe.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RecipesScreen extends StatelessWidget {
   const RecipesScreen({super.key});
 
-  Future<List<Map<String, String>>> _fetchRecipes() async {
-    await Future.delayed(const Duration(seconds: 0)); // Simula una carga
-    return [
-      {
-        'imageUrl': 'https://via.placeholder.com/150',
-        'title': 'Receta de Ejemplo 1',
-        'description': 'Una breve descripción de la receta 1.',
-      },
-      {
-        'imageUrl': 'https://via.placeholder.com/150',
-        'title': 'Receta de Ejemplo 2',
-        'description': 'Una breve descripción de la receta 2.',
-      },
-      {
-        'imageUrl': 'https://via.placeholder.com/150',
-        'title': 'Receta de Ejemplo 3',
-        'description': 'Una breve descripción de la receta 3.',
-      },
-    ];
+  // Método para hacer la solicitud a la API de Supabase y obtener las recetas
+  Future<List<Map<String, dynamic>>> _fetchRecipes() async {
+    try {
+      final response = await Supabase.instance.client
+          .from('recipes') // Reemplaza con el nombre de tu tabla
+          .select(); // Selecciona todos los campos
+
+      // Procesa los datos obtenidos
+      final List<dynamic> recipes = response;
+
+      return recipes.map((recipe) {
+        return {
+          'imageUrl': recipe[
+              'image'], // Asegúrate de que coincida con el campo 'image' de tu modelo
+          'title': recipe['title'],
+          'description': recipe['description'],
+          'likes': recipe['likes'], // Añade el número de likes
+        };
+      }).toList();
+    } catch (e) {
+      // Manejo de errores
+      print('Error al obtener recetas: $e');
+      throw e; // Lanza la excepción original
+    }
   }
 
   @override
@@ -33,7 +39,7 @@ class RecipesScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Recetas'),
       ),
-      body: FutureBuilder<List<Map<String, String>>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchRecipes(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,21 +59,28 @@ class RecipesScreen extends StatelessWidget {
               return Column(
                 children: [
                   RecipeCard(
-                    imageUrl: recipe['imageUrl']!,
-                    title: recipe['title']!,
-                    description: recipe['description']!,
+                    imageUrl: recipe['imageUrl'], // Imagen de la receta
+                    title: recipe['title'], // Título de la receta
+                    description: recipe['description'], // Descripción
+                    likes: recipe['likes'], // Número de likes
                     onTap: () {
                       // Navegar a la pantalla de detalles de la receta
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => RecipeDetailScreen(
-                            imageUrl: recipe['imageUrl']!,
-                            title: recipe['title']!,
-                            description: recipe['description']!,
+                            imageUrl: recipe['imageUrl'],
+                            title: recipe['title'],
+                            description: recipe['description'],
                           ),
                         ),
                       );
+                    },
+                    onLike: () {
+                      // Aquí puedes implementar la lógica para dar "like" a la receta
+                    },
+                    onComment: () {
+                      // Aquí puedes implementar la lógica para añadir un comentario
                     },
                   ),
                   const SizedBox(height: 16.0),

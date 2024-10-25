@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:smartcook/ingredient_manager.dart';
+import 'package:smartcook/screens/add_ingredient_dialog.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AddRecipeScreen extends StatefulWidget {
   const AddRecipeScreen({super.key});
@@ -14,11 +17,15 @@ class AddRecipeScreen extends StatefulWidget {
 class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
+  final IngredientManager _ingredientManager = IngredientManager();
   CroppedFile? _imageFile;
+  String? _selectedCategory;
 
+  // Lista de categorías
+  final List<String> _categories = ['Carnes', 'Cereales', 'Frutas', 'Verduras'];
+
+  // Método para seleccionar una imagen de la galería
   Future<void> _pickImage() async {
-    // Verificar y solicitar permisos
     final status = await Permission.photos.request();
     if (status.isDenied) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -29,54 +36,127 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     }
 
     final ImagePicker _picker = ImagePicker();
-    try {
-      final XFile? selectedImage =
-          await _picker.pickImage(source: ImageSource.gallery);
-      if (selectedImage != null) {
-        // Recortar la imagen a forma cuadrada
-        final CroppedFile? croppedImage = await ImageCropper().cropImage(
-          sourcePath: selectedImage.path,
-          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-          uiSettings: [
-            IOSUiSettings(
-              minimumAspectRatio: 1.0,
-            ),
-            AndroidUiSettings(
-              toolbarTitle: 'Recortar Imagen',
-              initAspectRatio: CropAspectRatioPreset.square,
-              lockAspectRatio: true,
-            ),
-          ],
-        );
-
-        if (croppedImage != null) {
-          setState(() {
-            _imageFile = croppedImage;
-            _imageUrlController.text = croppedImage
-                .path; // O puedes usar la URL si la subes a un servidor
-          });
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al seleccionar la imagen: $e')),
+    final XFile? selectedImage =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (selectedImage != null) {
+      final CroppedFile? croppedImage = await ImageCropper().cropImage(
+        sourcePath: selectedImage.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        uiSettings: [
+          IOSUiSettings(minimumAspectRatio: 1.0),
+          AndroidUiSettings(
+            toolbarTitle: 'Recortar Imagen',
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+          ),
+        ],
       );
+
+      if (croppedImage != null) {
+        setState(() {
+          _imageFile = croppedImage;
+        });
+      }
     }
   }
 
-  void _saveRecipe() {
+  // Método para guardar una receta en la base de datos usando Supabase
+  void _saveRecipe() async {
+    List<String> ingredientNames = _ingredientManager.getIngredientNames();
     final title = _titleController.text;
     final description = _descriptionController.text;
-    final imageUrl = _imageUrlController.text;
 
-    // TODO: Guardar la receta en la base de datos
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Debes estar autenticado para agregar una receta.')),
+      );
+      return;
+    }
 
-    // Regresar a la pantalla anterior
+    if (_selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor selecciona una categoría.')),
+      );
+      return;
+    }
+
+    if (ingredientNames.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Por favor añade al menos un ingrediente.')),
+      );
+      return;
+    }
+
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor selecciona una imagen.')),
+      );
+      return;
+    }
+
+    // Guardar receta en Supabase
+    final file = File(_imageFile!.path);
+    final String imagePath = 'images/${file.uri.pathSegments.last}';
+
+    final response = await Supabase.instance.client.storage
+        .from('recipes_images') // Reemplaza con el nombre de tu bucket
+        .upload(imagePath, file,
+            fileOptions:
+                const FileOptions(cacheControl: '3600', upsert: false));
+
+    // Obtener URL de la imagen cargada
+    final imageUrl = Supabase.instance.client.storage
+        .from('recipe_images')
+        .getPublicUrl(imagePath);
+
+    // Guardar la receta en la base de datos
+    final insertResponse = await Supabase.instance.client
+        .from('recipes') // Reemplaza con el nombre de tu tabla
+        .insert({
+      'title': title,
+      'description': description,
+      'image': imageUrl, // Asegúrate de usar la URL de la imagen
+      'category': _selectedCategory,
+      'ingredients':
+          ingredientNames, // Asegúrate de que tu base de datos esté preparada para esto
+    });
+
+    // Manejo de errores de inserción
+    if (insertResponse.error != null) {
+      final errorCode = insertResponse.error!.code;
+      final errorMessage = insertResponse.error!.message;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Error al agregar la receta: $errorCode - $errorMessage')),
+      );
+      return;
+    }
+
     Navigator.pop(context);
+  }
+
+  // Método para añadir ingredientes
+  void _addIngredient() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AddIngredientDialog(
+          ingredientManager: _ingredientManager,
+        );
+      },
+    ).then((_) {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final ingredients = _ingredientManager.getIngredients();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Añadir Receta'),
@@ -92,7 +172,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Botón para cargar la imagen
             Center(
               child: GestureDetector(
                 onTap: _pickImage,
@@ -118,32 +197,48 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             const SizedBox(height: 16.0),
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título',
-              ),
+              decoration: const InputDecoration(labelText: 'Título'),
             ),
             const SizedBox(height: 16.0),
             TextField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Descripción',
-              ),
+              decoration: const InputDecoration(labelText: 'Descripción'),
               maxLines: 4,
             ),
             const SizedBox(height: 16.0),
-            // Solo para referencia, si decides guardar la URL
-            TextField(
-              controller: _imageUrlController,
-              decoration: const InputDecoration(
-                labelText: 'URL de la Imagen',
-              ),
-              readOnly: true,
+            DropdownButton<String>(
+              value: _selectedCategory,
+              hint: const Text('Selecciona una categoría'),
+              isExpanded: true,
+              items: _categories.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCategory = newValue;
+                });
+              },
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _saveRecipe,
-              child: const Text('Guardar Receta'),
+              onPressed: _addIngredient,
+              child: const Text('Añadir Ingrediente'),
             ),
+            const SizedBox(height: 16.0),
+            ingredients.isNotEmpty
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Ingredientes:',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      ...ingredients.map((ingredient) => Text(ingredient.name))
+                    ],
+                  )
+                : const Text('No se han añadido ingredientes.'),
+            const SizedBox(height: 16.0),
           ],
         ),
       ),
