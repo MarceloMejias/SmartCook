@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smartcook/screens/auth/register.dart';
+import 'package:smartcook/api/apiservice.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,19 +15,19 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final String dummyUsername = 'usuario';
-  final String dummyPassword = 'password';
+  final ApiService _apiService = ApiService(); // Instancia de ApiService
 
   Future<void> _login() async {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    if (username == dummyUsername && password == dummyPassword) {
-      // Credenciales válidas: continuar con el inicio de sesión
-      // Se navega al homescreen después de un inicio de sesión exitoso
+    try {
+      await _apiService.loginUser(
+          username, password); // Llamada a la API para el login
+      // Si el login es exitoso, navega al homescreen
       Navigator.of(context).pushReplacementNamed('/home');
-    } else {
-      // Credenciales inválidas: mostrar alerta
+    } catch (e) {
+      // Si hay un error, muestra el diálogo de credenciales inválidas
       _showInvalidCredentialsDialog();
     }
   }
