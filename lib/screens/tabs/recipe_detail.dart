@@ -36,7 +36,7 @@ class RecipeDetailScreen extends StatelessWidget {
                     description,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  // Aquí puedes agregar más información, como ingredientes y pasos
+                  // TODO: Añadir botones para dar "like" y ver comentarios
                 ],
               ),
             ),

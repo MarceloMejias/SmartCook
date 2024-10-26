@@ -20,7 +20,7 @@ class RecipesScreen extends StatelessWidget {
       return recipes.map((recipe) {
         return {
           'imageUrl': recipe[
-              'image'], // Asegúrate de que coincida con el campo 'image' de tu modelo
+              'image'], // TODO: Revisar si el campo de la imagen es correcto
           'title': recipe['title'],
           'description': recipe['description'],
           'likes': recipe['likes'], // Añade el número de likes
@@ -29,7 +29,7 @@ class RecipesScreen extends StatelessWidget {
     } catch (e) {
       // Manejo de errores
       print('Error al obtener recetas: $e');
-      throw e; // Lanza la excepción original
+      rethrow; // Lanza la excepción original
     }
   }
 
@@ -77,10 +77,10 @@ class RecipesScreen extends StatelessWidget {
                       );
                     },
                     onLike: () {
-                      // Aquí puedes implementar la lógica para dar "like" a la receta
+                      // Lógica para dar "like" a la receta
                     },
                     onComment: () {
-                      // Aquí puedes implementar la lógica para añadir un comentario
+                      // Lógica para ver los comentarios de la receta
                     },
                   ),
                   const SizedBox(height: 16.0),

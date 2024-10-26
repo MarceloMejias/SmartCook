@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding
-      .ensureInitialized(); // Asegúrate de inicializar los bindings
+      .ensureInitialized(); // Bindings necesarios para inicializar la app
 
   // Inicializa Supabase
   await Supabase.initialize(
@@ -30,7 +30,7 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ).copyWith(
-          // Aquí puedes agregar más configuraciones específicas del tema
+          // Configuraciones específicas del tema claro
           ),
       darkTheme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
