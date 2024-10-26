@@ -8,7 +8,7 @@ Desarrollo de Aplicaciones Móviles 2024-2.
 | -------------- | --------------------- |
 | Marcelo Mejías | marcelo.mejias@usm.cl |
 | Paola Vásquez  | paola.vasquez@usm.cl  |
-| x              | x@x.x                 |
+| Sebastián Álvarez | sebastian.alvarezav@usm.cl |
 
 ---
 
