@@ -33,9 +33,13 @@ Diseñar y desarrollar una aplicación móvil que busca fomentar una vida más s
 1. **Escalabilidad y capacidad de respuesta**: Asegurar que la infraestructura de la app pueda manejar un número creciente de usuarios y que las consultas nutricionales sean procesadas de manera eficiente, optimizando la capacidad de respuesta.
 2. **Diseño de la interfaz y experiencia del usuario (UX/UI)**: Optimizar la interfaz para hacer que la experiencia de uso sea más intuitiva y atractiva, maximizando la retención y el compromiso de los usuarios.
 
-## Interfaz
+## Credenciales de inicio de sesión para probar la app
 
-Material UI 3.
+- **Usuario Regular**:
+  ```
+  Correo: test@test.com
+  Contraseña: 12345
+  ```
 
 ## Objetivo
 
