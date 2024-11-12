@@ -7,7 +7,7 @@ Desarrollo de Aplicaciones Móviles 2024-2.
 | Nombre         | Correo                |
 | -------------- | --------------------- |
 | Marcelo Mejías | marcelo.mejias@usm.cl |
-| Paola Vásquez  | paola.vasquez@usm.cl  |
+| x              | x@x.x                 |
 | x              | x@x.x                 |
 
 ---
