@@ -4,8 +4,7 @@ import 'package:smartcook/ingredient_manager.dart';
 class AddIngredientDialog extends StatelessWidget {
   final IngredientManager ingredientManager;
 
-  const AddIngredientDialog({Key? key, required this.ingredientManager})
-      : super(key: key);
+  const AddIngredientDialog({super.key, required this.ingredientManager});
 
   @override
   Widget build(BuildContext context) {

@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
     required VoidCallback onPressed,
     required ColorScheme colorScheme,
   }) {
-    final Color backgroundColor = colorScheme.surfaceVariant;
+    final Color backgroundColor = colorScheme.surfaceContainerHighest;
     final Color iconColor = colorScheme.onSurface;
 
     return Container(

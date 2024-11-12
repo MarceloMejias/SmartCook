@@ -35,9 +35,9 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       return;
     }
 
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     final XFile? selectedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
     if (selectedImage != null) {
       final CroppedFile? croppedImage = await ImageCropper().cropImage(
         sourcePath: selectedImage.path,

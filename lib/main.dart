@@ -20,6 +20,8 @@ Future<void> main() async {
 }
 
 class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -53,7 +55,7 @@ class MainApp extends StatelessWidget {
 }
 
 class _HomeWrapper extends StatelessWidget {
-  const _HomeWrapper({Key? key}) : super(key: key);
+  const _HomeWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
